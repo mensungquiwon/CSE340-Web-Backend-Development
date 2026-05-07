@@ -1,0 +1,28 @@
+{
+  "name": "cse340-web-backend-development",
+  "version": "1.0.0",
+  "description": "This is my introductory course to web backend.",
+  "homepage": "https://github.com/mensungquiwon/CSE340-Web-Backend-Development#readme",
+  "bugs": {
+    "url": "https://github.com/mensungquiwon/CSE340-Web-Backend-Development/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mensungquiwon/CSE340-Web-Backend-Development.git"
+  },
+  "license": "ISC",
+  "author": "Jonathan M. Quiwon",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ejs": "^5.0.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
