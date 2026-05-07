@@ -1,30 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
+
 html, body {
-    background-color: lightblue;
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    background-color: #f0f4f8;
+    font-family: 'DM Sans', sans-serif;
+    color: #1a1a1a;
 }
 
-body {
-    nav {
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
+/* ── Navigation ── */
+nav {
+    background: #0f2d4a;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.nav-brand {
+    font-family: 'Lora', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
 
-        li {
-            display: inline;
-            margin-right: 15px;
-        }
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-        a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
+nav ul li a {
+    color: rgba(255,255,255,0.72);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 6px 13px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
 
-            &:hover {
-                color: #0066cc;
-            }
-        }
-    }
-}                
+nav ul li a:hover,
+nav ul li a.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+
+/* ── Main content wrapper ── */
+main {
+    max-width: 860px;
+    margin: 2.5rem auto;
+    padding: 0 2rem;
+}
+
+main h1 {
+    font-family: 'Lora', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #0f2d4a;
+    margin: 0 0 0.5rem;
+    border-bottom: 2px solid #7ec8e3;
+    padding-bottom: 0.5rem;
+}
+
+main h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a4a6e;
+    margin: 1rem 0 0.4rem;
+}
+
+main p {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.7;
+    margin: 0 0 1.5rem;
+}
+
+/* ── Home logo ── */
+.main-logo {
+    display: block;
+    max-width: 220px;
+    margin: 2rem 0;
+}
+
+/* ── Organizations list ── */
+main ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+main ul li {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+main ul li img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+main ul li strong {
+    font-weight: 600;
+    color: #0f2d4a;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* ── Projects list ── */
+main ul li:has(:not(img)) {
+    padding-left: 1.25rem;
+}
+
+/* ── Categories ── */
+.categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-top: 1.25rem;
+}
+
+.category-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #1a4a6e;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f2d4a;
+    transition: box-shadow 0.15s, transform 0.15s;
+    cursor: default;
+}
+
+.category-card:hover {
+    box-shadow: 0 4px 16px rgba(15,45,74,0.1);
+    transform: translateY(-2px);
+}
+
+/* ── Footer ── */
+footer {
+    background: #0f2d4a;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    font-size: 13px;
+    padding: 1.25rem 2rem;
+    margin-top: 4rem;
+}       
