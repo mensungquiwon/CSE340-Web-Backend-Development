@@ -1,0 +1,329 @@
+================================================================
+WEEK 01 COACHING SESSION TRANSCRIPT
+Student: Jonathan Quiwon
+Course: CSE 340 - Web Backend Development
+================================================================
+
+COACH: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say 'I don't know' or 'I made a mistake.' That's the fastest way we'll learn today.
+
+I'm your Learning Coach and Software Mentor for this session. We're going to have a relaxed conversation about your assignment work, and together we'll walk through four key areas:
+1. Express Routing
+2. JavaScript Language Principles
+3. EJS Partials and Pages
+4. Frontend CSS
+
+There's no pressure — this is purely about learning and reflection.
+
+To get us started, could you tell me your name so I know how to address you throughout our session?
+
+JONATHAN: My name is Jonathan Quiwon
+
+COACH: It's great to meet you, Jonathan! Remember, this is a completely safe space — there are no wrong answers here, and saying "I don't know" is always welcome. We're just here to talk through your work and learn together.
+
+Let's dive into our first topic — Express Routing. To get us started, could you paste the code from your server.js file into the chat so we can look at it together?
+
+JONATHAN:
+```javascript
+import { fileURLToPath } from 'url';
+import path from 'path';
+import express from 'express';
+
+// Define the the application environment
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Define the port number the server will listen on
+const PORT = process.env.PORT || 3000;
+
+const app = express();
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+// Set EJS as the templating engine
+app.set('view engine', 'ejs');
+// Tell Express where to find your templates
+app.set('views', path.join(__dirname, 'src/views'));
+
+// Routes
+app.get('/', (req, res) => {
+    res.render('home', { title: 'Home' });
+});
+
+app.get('/organizations', (req, res) => {
+    res.render('organizations', { title: 'Organizations' });
+});
+
+app.get('/projects', (req, res) => {
+    res.render('projects', { title: 'Projects' });
+});
+
+app.get('/categories', (req, res) => {
+    res.render('categories', { title: 'Categories' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running at http://127.0.0.1:${PORT}`);
+  console.log(`Environment: ${NODE_ENV}`);
+});
+```
+
+COACH: Thanks for sharing that, Jonathan! Your server.js is clean and well-structured — great work getting this set up.
+
+I can see you have this route in your file:
+```javascript
+app.get('/', (req, res) => {
+    res.render('home', { title: 'Home' });
+});
+```
+In your own words, can you walk me through what this route does when someone visits your website?
+
+JONATHAN: This get a request from a client and sent it the server in the web browser, and the server process the request and the send the appropriate respond to the client. Completing the request-respond lifecycle.
+
+COACH: That's a great explanation, Jonathan! You clearly understand the request-response lifecycle — that's one of the most fundamental concepts in backend development, well done!
+
+You mentioned the server sends back the "appropriate response." In this specific route:
+```javascript
+app.get('/', (req, res) => {
+    res.render('home', { title: 'Home' });
+});
+```
+What do you think res.render('home', { title: 'Home' }) is actually sending back to the client as the response?
+
+JONATHAN: In this route the server is sending back the index page or home of the website to the client.
+
+COACH: Exactly right, Jonathan! The server sends back the home page to the client.
+
+And to add a little more detail — res.render('home', { title: 'Home' }) is specifically telling Express to find the home.ejs template file in your views folder and render it as HTML before sending it back.
+
+Notice this part: { title: 'Home' }
+
+What do you think this title: 'Home' object is doing, and where do you think it goes after it's passed into the template?
+
+JONATHAN: This creates the h1 element on the page. so it render the tittle of home page
+
+COACH: That's a good instinct, Jonathan! You're on the right track — it does display something on the page.
+
+To be a little more precise though, { title: 'Home' } is actually data being passed from the server to the EJS template. Once inside the template, you can use it anywhere — not just in an <h1> but also in places like the browser tab title for example.
+
+Could you paste your home.ejs file into the chat so we can see exactly where title is being used in your template?
+
+JONATHAN:
+```html
+<main>
+    <h1><%= title %></h1>
+    <h2>Welcome to the CSE 340 Service Network!</h2>
+        <p>Our mission is to promote service across the world by connecting volunteers with service opportunities in their community.</p>
+    <img class="main-logo" src="images/cse340-service-network.png" alt="CSE 340 Service Network Logo">
+</main>
+<%- include('partials/footer') %>
+```
+
+COACH: Great, thanks for sharing that, Jonathan!
+
+Now it all connects together! You can see here:
+```html
+<h1><%= title %></h1>
+```
+This is where the title: 'Home' from your server gets displayed — the <%= %> tag is what pulls the data from the server and renders it into the HTML. So it's not just hardcoded text, it's dynamic data coming from your route!
+
+This is a perfect segue into our next topic — EJS Partials. I noticed at the bottom of your home.ejs you have:
+```html
+<%- include('partials/footer') %>
+```
+Could you explain to me what this line does and why you think using partials like this is useful?
+
+JONATHAN: First this is a relative path to the footer.ejs. So, this line of code is saying include the ejs footer template as HTML on the home page
+
+COACH: Perfect explanation, Jonathan! You nailed it — it pulls in the footer.ejs file and renders it as HTML directly on the page.
+
+Now thinking about the "why" behind it — imagine you have 4 pages on your site like you do (home, organizations, projects, categories) and you wanted to update your footer.
+
+What do you think would happen if you didn't use partials and instead copied the footer code into every single page manually?
+
+JONATHAN: This is where dynamic website development gets interesting and beautiful. If you didn't use the partials will have to manually update each page on the site. Like a static website. In a setting like this I would need to update the footer.ejs in the partial directory and it will apply to all the pages on the site.
+
+COACH: That is a brilliant answer, Jonathan! You completely nailed it — that is exactly the power of EJS partials. Write it once, update it once, and it applies everywhere. That's one of the core principles of good software development — keeping your code DRY (Don't Repeat Yourself).
+
+Could you go ahead and paste your footer.ejs partial file into the chat so we can take a look at it together?
+
+JONATHAN:
+```html
+<footer>
+    <p>&copy; <%= new Date().getFullYear() %> CSE 340 Service Network.</p>
+</footer>
+</body>
+</html>
+```
+
+COACH: Excellent, Jonathan! And look at this interesting line inside your footer:
+```html
+<%= new Date().getFullYear() %>
+```
+This is a great example of EJS in action! Instead of hardcoding the year like 2025, you're using dynamic JavaScript right inside your HTML.
+
+What do you think the benefit is of using new Date().getFullYear() instead of just typing the year number manually?
+
+JONATHAN: This method dynamically updates every time the year changes. I will not have to come every new to update the year on the page. By using this allows js to update the year every new year
+
+COACH: Absolutely perfect, Jonathan! You explained that beautifully — it's self-maintaining code that never goes out of date. That's really smart thinking!
+
+So far you've done a fantastic job discussing Express Routing and EJS Partials and Pages.
+
+Now let's move into our third topic — JavaScript Language Principles. Could you paste a JavaScript function or piece of logic from your project that you're either proud of or found interesting to write?
+
+JONATHAN:
+```javascript
+app.listen(PORT, () => {
+  console.log(`Server is running at http://127.0.0.1:${PORT}`);
+  console.log(`Environment: ${NODE_ENV}`);
+});
+```
+
+COACH: Great choice, Jonathan! This is a really important piece of your server.js.
+
+I can see you're using template literals here — those backtick strings with ${} inside them:
+```javascript
+console.log(`Server is running at http://127.0.0.1:${PORT}`);
+```
+In your own words, can you explain what template literals are and why you used them here instead of regular quotes?
+
+JONATHAN: So template literal is the modern js logic syntax. This was used because variable ${PORT} was called in the string. Inorder to concatenate both the string and the variable template literal was used
+
+COACH: Outstanding explanation, Jonathan! You clearly understand why template literals are useful — they make string concatenation cleaner and more readable.
+
+Just to show the contrast, the old way of writing that same line would have been:
+```javascript
+console.log('Server is running at http://127.0.0.1:' + PORT);
+```
+Versus the modern template literal way:
+```javascript
+console.log(`Server is running at http://127.0.0.1:${PORT}`);
+```
+Much cleaner right?
+
+Now looking at the bigger picture of this code block:
+```javascript
+app.listen(PORT, () => {
+  console.log(`Server is running at http://127.0.0.1:${PORT}`);
+  console.log(`Environment: ${NODE_ENV}`);
+});
+```
+Can you tell me what app.listen(PORT, () => {}) is doing and why it is important for your server?
+
+JONATHAN: I am too sure about this PORT uses. but I know that app.listen is arrow function what is use to add event listener to code when clicked.
+
+COACH: I really appreciate your honesty, Jonathan — that's exactly the kind of "I'm not sure" moment that makes this coaching session valuable!
+
+You're right that it involves an arrow function () => {} — great spot! However app.listen is actually a little different from a click event listener.
+
+Think of it this way — your server is like a shop. Before customers can walk in and make requests, the shop needs to open its doors first.
+
+app.listen(PORT) is what opens the doors of your server, telling it to start watching for incoming requests on a specific port number — in your case port 3000.
+
+So when you run your server and see this in the terminal:
+    Server is running at http://127.0.0.1:3000
+
+That means your server has successfully opened its doors and is ready to receive requests from clients!
+
+Does that explanation make sense to you, Jonathan?
+
+JONATHAN: Absolutely
+
+COACH: Great, Jonathan! Now you have a solid understanding of what app.listen does — it's what starts and opens your server for incoming requests.
+
+You've done an amazing job so far! We have just one topic left — Frontend CSS!
+
+Could you paste a CSS snippet from your project that you found interesting or challenging to write?
+
+JONATHAN:
+```css
+nav {
+    background: #0f2d4a;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+```
+
+COACH: Great CSS snippet, Jonathan! Your navbar looks really well thought out!
+
+I can see you used display: flex here:
+```css
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+```
+Can you explain in your own words what Flexbox is doing to your navbar and why you chose to use it?
+
+JONATHAN: Flexbox is great way to display how want nav items to look on the page and their directions on the page.
+
+COACH: That's a good start, Jonathan! Flexbox is indeed a powerful layout tool.
+
+Looking more specifically at these two properties you used together:
+```css
+align-items: center;
+justify-content: space-between;
+```
+Can you tell me what each one is doing to the items inside your navbar?
+
+JONATHAN: This aligns the content the center of the page and justify-content create equal space among them
+
+COACH: Great effort, Jonathan! You're close! Let me add a little precision:
+
+- align-items: center — centers the nav items vertically (up and down) inside the navbar
+- justify-content: space-between — pushes the nav items to the far left and far right of the navbar with space in between them, not exactly equal spacing among all items
+
+Think of it like this:
+|  Logo                    Home  About  Contact  |
+  ^ pushed to left              ^ pushed to right
+
+That's what space-between creates!
+
+Now looking at this property in your navbar:
+```css
+position: sticky;
+top: 0;
+```
+What do you think position: sticky does to your navbar when a user scrolls down the page?
+
+JONATHAN: Honestly, I don't know
+
+COACH: I love the honesty, Jonathan! That's perfectly okay — this is exactly what our session is for!
+
+position: sticky is actually a really cool CSS property. Think of it this way — as a user scrolls down your page, normally your navbar would scroll away and disappear off the top of the screen.
+
+But with position: sticky and top: 0, your navbar sticks to the top of the browser window as the user scrolls down, so it's always visible no matter how far down the page they go.
+
+This is great for user experience because visitors can always navigate your site without scrolling back to the top!
+
+Does that make sense, Jonathan?
+
+JONATHAN: I actually been admiring this on pages that used this. Thanks for the explanation
+
+COACH: That's awesome, Jonathan! Now you don't just admire it — you actually built it yourself in your project! That's something to be proud of.
+
+And now whenever you see a sticky navbar on any website, you'll know exactly what CSS property is making it work. That's the beauty of learning web development — you start seeing the code behind everything you interact with on the web!
+
+SESSION SUMMARY:
+- ✅ Express Routing — Request-response lifecycle and how routes work
+- ✅ EJS Partials and Pages — Dynamic templates and the power of reusable partials
+- ✅ JavaScript Language Principles — Template literals, arrow functions and app.listen
+- ✅ Frontend CSS — Flexbox layout and sticky positioning
+
+JONATHAN: Okay, thanks for the session. I was really great way to go into next week
+
+COACH: That means a lot, Jonathan! It was a genuine pleasure coaching you today. You came in prepared, explained your code confidently, and weren't afraid to say "I don't know" — that's the mark of a great developer in the making!
+
+================================================================
+END OF SESSION TRANSCRIPT
+================================================================
