@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllProjects } from './src/models/projects.js';
 
 
 import express from 'express';
@@ -44,8 +45,11 @@ app.get('/organizations', async (req, res) => {
     res.render('organizations', { title, organizations });
 });
 
-app.get('/projects', (req, res) => {
-    res.render('projects', { title: 'Projects' });
+app.get('/projects', async (req, res) => {
+    const projects = await getAllProjects();
+    
+    const title = 'Our Projects';
+    res.render('projects', { title, projects });
 });
 app.get('/categories', (req, res) => {
     res.render('categories', { title: 'Categories' });

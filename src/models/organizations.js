@@ -11,4 +11,4 @@ const getAllOrganizations = async() => {
     return result.rows;
 }
 
-export {getAllOrganizations}  90iokl,
+export {getAllOrganizations}
