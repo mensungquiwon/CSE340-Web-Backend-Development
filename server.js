@@ -3,6 +3,7 @@ import path from 'path';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
 import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
 
 
 import express from 'express';
@@ -51,8 +52,10 @@ app.get('/projects', async (req, res) => {
     const title = 'Our Projects';
     res.render('projects', { title, projects });
 });
-app.get('/categories', (req, res) => {
-    res.render('categories', { title: 'Categories' });
+app.get('/categories', async (req, res) => {
+    const categories = await getAllCategories();
+    
+    res.render('categories', { title: 'Categories', categories });
 });
 
 

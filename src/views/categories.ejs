@@ -1,13 +1,10 @@
 <%- include('partials/header') %>
 <main>
     <h1><%= title %></h1>
-
-    <div class="categories">
-        <div class="category-card">Environmental</div>
-        <div class="category-card">Educational</div>
-        <div class="category-card">Community Service</div>
-        <div class="category-card">Health and Wellness</div>
-    </div>
-    
+    <ul>
+        <% categories.forEach(category => { %>
+            <li><%= category.name %></li>
+        <% }) %>
+    </ul>
 </main>
 <%- include('partials/footer') %>
