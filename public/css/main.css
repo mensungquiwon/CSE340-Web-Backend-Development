@@ -161,6 +161,68 @@ main ul li:has(:not(img)) {
     box-shadow: 0 4px 16px rgba(15,45,74,0.1);
     transform: translateY(-2px);
 }
+.org-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.org-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+.org-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.org-logo img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f8fafc;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.org-info {
+    flex: 1;
+}
+
+.org-info h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    color: #1a202c;
+}
+
+.org-description {
+    margin: 0 0 0.75rem 0;
+    color: #4a5568;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.org-email {
+    display: inline-block;
+    color: #3182ce;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.org-email:hover {
+    text-decoration: underline;
+}
 
 /* ── Footer ── */
 footer {
