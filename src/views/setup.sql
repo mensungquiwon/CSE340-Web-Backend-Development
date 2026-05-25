@@ -106,3 +106,6 @@ VALUES
     (13, 3), (13, 5),
     (14, 1), (14, 5),
     (15, 4), (15, 5);
+
+
+SELECT project_id, title, description, location, date, organization_id FROM project;

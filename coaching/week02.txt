@@ -1,0 +1,321 @@
+WEEK 02 COACHING SESSION TRANSCRIPT
+Student: Jonathan M. Quiwon
+Date: May 25, 2026
+============================================================
+
+COACH: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say "I don't know" or "I made a mistake." That's the fastest way we'll learn today.
+
+I'm really glad you're here, and I want this to feel like a comfortable conversation between us — no pressure, just learning.
+
+To get us started: what's your name?
+
+------------------------------------------------------------
+
+JONATHAN: Jonathan M. Quiwon
+
+------------------------------------------------------------
+
+COACH: Great to meet you, Jonathan! You're in a safe space here — mistakes are not just okay, they're genuinely useful. Every "I'm not sure" or "I think I got this wrong" is a golden learning moment, so please don't hold back.
+
+Now, to kick things off on the right foot — can you give me a quick overview of what your Week 02 assignment was about? Just describe it in your own words, as if you were explaining it to a friend.
+
+------------------------------------------------------------
+
+JONATHAN: Week 02 assignment was about creating tables and inserting data into those table of the project using sql.
+
+------------------------------------------------------------
+
+COACH: That's a great start, Jonathan! Creating tables and inserting data are foundational skills in working with relational databases.
+
+To dig into this a bit more — can you paste in one of your SQL CREATE TABLE statements so we can talk through it together?
+
+------------------------------------------------------------
+
+JONATHAN:
+CREATE TABLE organizations (
+    organization_id SERIAL PRIMARY KEY,
+    name            VARCHAR(150) NOT NULL,
+    description     TEXT NOT NULL,
+    contact_email   VARCHAR(255) NOT NULL,
+    logo_filename   VARCHAR(255) NOT NULL
+);
+
+------------------------------------------------------------
+
+COACH: Nice work, Jonathan! This is a clean and well-structured table definition.
+
+I can see you've used a few different data types here — SERIAL, VARCHAR, and TEXT. Can you explain why you chose TEXT for the description column instead of VARCHAR like you used for the other columns?
+
+------------------------------------------------------------
+
+JONATHAN: So text is a broader datatype of varchar. It gives to more space and allow more text content than the varchar. So for varchar we usually set a limitation to how many characters to accept in that field, but text you don't have to do that.
+
+------------------------------------------------------------
+
+COACH: Excellent explanation, Jonathan! You clearly understand the distinction — TEXT is ideal when you can't predict how long the content will be, like a description, while VARCHAR is great when you want to enforce a character limit, like an email address or a filename.
+
+Now, your assignment also likely involved relationships between tables. Can you paste in another CREATE TABLE statement that has a foreign key or is connected to the organizations table in some way?
+
+------------------------------------------------------------
+
+JONATHAN:
+CREATE TABLE project (
+    project_id      SERIAL PRIMARY KEY,
+    organization_id INT NOT NULL,
+    title           VARCHAR(255) NOT NULL,
+    description     TEXT NOT NULL,
+    location        VARCHAR(255),
+    date            DATE NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations(organization_id)
+);
+
+------------------------------------------------------------
+
+COACH: Great stuff, Jonathan! This is a perfect example of a relationship between two tables.
+
+I can see that project has a organization_id column that references back to the organizations table. Can you explain in your own words what that FOREIGN KEY line is doing and why it's important to have it there?
+
+------------------------------------------------------------
+
+JONATHAN: First of all, foreign key helps build relationship between two tables. so, in this example because organization_id is the primary key in the organization table. And we want to link the both tables. organization_id becomes the foreign key that links the project table to organization table.
+
+------------------------------------------------------------
+
+COACH: Spot on, Jonathan! You've nailed the core concept — the primary key in one table becomes the foreign key in another, and that's exactly how relationships are built between tables in a relational database.
+
+This also means that a single organization can have many projects linked to it. Can you paste in a SQL query — maybe a SELECT statement — that you wrote to retrieve data from one or more of these tables?
+
+------------------------------------------------------------
+
+JONATHAN: SELECT * FROM organizations;
+
+------------------------------------------------------------
+
+COACH: That works! A simple SELECT * is a perfectly valid query for pulling all records from a table.
+
+Now let me push your thinking a little further — can you write or paste a query that pulls data from both the organizations and project tables together at the same time, and explain how you would connect them?
+
+------------------------------------------------------------
+
+JONATHAN:
+SELECT
+    p.project_id,
+    p.title,
+    p.description,
+    p.location,
+    p.date,
+    p.organization_id,
+    o.organization_name
+FROM project p
+JOIN organization o
+    ON p.organization_id = o.organization_id;
+
+------------------------------------------------------------
+
+COACH: Really good effort, Jonathan! You've got the right idea with the JOIN — connecting the two tables using the shared organization_id is exactly the correct approach.
+
+I do want to point out something small — looking back at your CREATE TABLE statement for organizations, the column was defined as name, not organization_name. So that line would likely throw an error in practice. Do you see what the fix would be?
+
+------------------------------------------------------------
+
+JONATHAN: yeah name
+
+------------------------------------------------------------
+
+COACH: Exactly! A simple but important catch — it would be o.name instead of o.organization_name. Those small naming mismatches are a very common source of bugs, so it's a great habit to always double-check your column names against your table definitions.
+
+You've done really well covering the database side of things, Jonathan. Let's move on to how your application actually talks to that database.
+
+Can you paste in the Node.js function you wrote that connects to your database and runs a query?
+
+------------------------------------------------------------
+
+JONATHAN:
+import { Pool } from 'pg';
+
+const pool = new Pool({
+    connectionString: process.env.DB_URL,
+    ssl: true
+});
+
+let db = null;
+
+if (process.env.NODE_ENV === 'development' && process.env.ENABLE_SQL_LOGGING === 'true') {
+    db = {
+        async query(text, params) {
+            try {
+                const start = Date.now();
+                const res = await pool.query(text, params);
+                const duration = Date.now() - start;
+                console.log('Executed query:', { 
+                    text: text.replace(/\s+/g, ' ').trim(), 
+                    duration: `${duration}ms`, 
+                    rows: res.rowCount 
+                });
+                return res;
+            } catch (error) {
+                console.error('Error in query:', { 
+                    text: text.replace(/\s+/g, ' ').trim(), 
+                    error: error.message 
+                });
+                throw error;
+            }
+        },
+
+        async close() {
+            await pool.end();
+        }
+    };
+} else {
+    db = pool;
+}
+
+const testConnection = async() => {
+    try {
+        const result = await db.query('SELECT NOW() as current_time');
+        console.log('Database connection successful:', result.rows[0].current_time);
+        return true;
+    } catch (error) {
+        console.error('Database connection failed:', error.message);
+        throw error;
+    }
+};
+
+export { db as default, testConnection };
+
+------------------------------------------------------------
+
+COACH: This is really impressive code, Jonathan! It's well-commented and shows some solid thinking around database connectivity.
+
+I want to focus on one specific part — near the top you have process.env.DB_URL for the connection string. Can you explain why you stored the database URL in an environment variable instead of just writing it directly in the code?
+
+------------------------------------------------------------
+
+JONATHAN: I may not be 100% correct, but what I know is the site is already live an environment with an active database. So just writing it directly in the code won't connect the server to the data base environment.
+
+------------------------------------------------------------
+
+COACH: That's a really honest answer, Jonathan, and you're partially on the right track! The idea that the environment needs to match where the app is running is correct.
+
+Let me nudge you a little further though — think about what would happen if you wrote your actual database username and password directly in the code and then pushed that code to GitHub. What risk do you think that could create?
+
+------------------------------------------------------------
+
+JONATHAN: i don't know but it will expose your credentials to outsiders
+
+------------------------------------------------------------
+
+COACH: Exactly right, Jonathan! That's the core reason — storing credentials directly in code and pushing it to a public repository like GitHub would expose your database username, password, and host to anyone who can see that code. That's a serious security risk.
+
+So environment variables solve two problems: they keep sensitive credentials secure, and they allow the same code to connect to different databases depending on the environment (development, production, etc.) without changing the code itself. Great thinking!
+
+Now let's move on to how your app handles incoming requests. Can you paste in a route declaration from your Express server file — something like an app.get() or a router definition?
+
+------------------------------------------------------------
+
+JONATHAN:
+app.get('/organizations', async (req, res) => {
+    const organizations = await getAllOrganizations();
+    
+    const title = 'Our Partner Organizations';
+    res.render('organizations', { title, organizations });
+});
+
+------------------------------------------------------------
+
+COACH: Nice, Jonathan! This is a clean and well-structured route handler.
+
+I can see it's doing a few things — handling the request, fetching data, and then rendering a view. Can you walk me through what you think happens step by step when a user visits /organizations in their browser?
+
+------------------------------------------------------------
+
+JONATHAN: when the user visits this tab the client sends request to the server and the server process or [accidentally submitted]
+
+------------------------------------------------------------
+
+COACH: You're on the right track, keep going! Don't worry about getting it perfect.
+
+You said "the client sends a request to the server and the server processes..." — what do you think the server does next, specifically looking at the two lines inside that route handler?
+
+------------------------------------------------------------
+
+JONATHAN: Actually i mistakenly submitted this.
+First the client sends the request to server.
+second, the server fetch and processes appropriate data or information from the database.
+Last, It render the request or information the user view.
+
+------------------------------------------------------------
+
+COACH: That's a perfect breakdown, Jonathan! You've described the full request-response cycle really clearly:
+
+1. Client sends a request → hits the /organizations route
+2. Server fetches data → getAllOrganizations() pulls from the database
+3. Server renders the view → res.render() sends the result back to the client
+
+You clearly understand the flow well. Now let's talk about that last step — the rendering part. Can you paste in your organizations EJS template, or at least the part where you loop through and display the organizations on the page?
+
+------------------------------------------------------------
+
+JONATHAN:
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+    <p>Here are a few of our partner organizations:</p>
+
+    <div class="org-grid">
+        <% organizations.forEach(organization => { %>
+            <div class="org-card">
+                <div class="org-logo">
+                    <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo">
+                </div>
+                <div class="org-info">
+                    <h2><%= organization.name %></h2>
+                    <p class="org-description"><%= organization.description %></p>
+                    <a href="mailto:<%= organization.contact_email %>" class="org-email">
+                        ✉ <%= organization.contact_email %>
+                    </a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>
+
+------------------------------------------------------------
+
+COACH: Excellent, Jonathan! This is a really well-structured EJS template.
+
+I want to focus on something you'll notice if you look closely — there are two different EJS tags being used here: <%= %> and <%- %>. Can you take a guess at what the difference is between those two tags?
+
+------------------------------------------------------------
+
+JONATHAN: If i can recall very well, the one with the equal sign doesn't escape and the one with the minus escape.
+
+------------------------------------------------------------
+
+COACH: You're actually very close, Jonathan, but it's the other way around! Let me clarify:
+
+- <%= %> ESCAPES the output — meaning it converts special characters like < and > into safe HTML, which protects against security attacks.
+- <%- %> does NOT escape the output — meaning it renders the content as raw HTML.
+
+So looking at your template, <%- include('partials/header') %> uses the unescaped tag because you WANT the header to be rendered as actual HTML, not as plain text.
+
+You had the right idea, just the two got swapped! That's a very easy thing to mix up.
+
+Now Jonathan, I'm happy to say we've actually covered all four required topics today — databases, Node.js data access, Express routing, and EJS templates. You've done a fantastic job throughout this session!
+
+Before we wrap up, is there anything from the assignment that confused you or that you'd like to revisit before we close out?
+
+------------------------------------------------------------
+
+JONATHAN: I will get back to you shortly. Let me submit my assignment first.
+
+------------------------------------------------------------
+
+COACH: No problem at all, Jonathan! Good luck with the submission — you've clearly got a solid understanding of the material. Come back whenever you're ready and we'll pick right up!
+
+============================================================
+END OF SESSION TRANSCRIPT
+============================================================
