@@ -20,9 +20,9 @@ const getOrganizationDetails = async (organizationId) => {
         description,
         contact_email,
         logo_filename
-      FROM organization
+      FROM organizations
       WHERE organization_id = $1;
-    `;
+    `
 
       const queryParams = [organizationId];
       const result = await db.query(query, queryParams);
