@@ -1,0 +1,68 @@
+Week 03 Coaching Session Transcript
+
+Coach: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say 'I don't know' or 'I made a mistake.' That's the fastest way we'll learn today.
+
+Coach: Hi there! I want to make sure I’ve got your name right before we begin—are you Jonathan? Also, this is a safe learning space where experimentation and mistakes are part of the process 👍
+
+Coach: Can you paste a non-trivial model function from your assignment that takes a parameter and uses it in an SQL query?
+
+User: const getProjectsByOrganizationId = async (organizationId) => {
+    const query = `
+        SELECT
+            project_id,
+            organization_id,
+            title,
+            description,
+            location,
+            date
+        FROM project
+        WHERE organization_id = $1
+        ORDER BY date;
+    `;
+
+    const queryParams = [organizationId];
+    const result = await db.query(query, queryParams);
+    return result.rows;
+};
+
+Coach: Why did you choose to pass organizationId as a parameter using $1 instead of directly inserting it into the query string?
+
+User: I used organizationId as a parameter... strong security against malicious attack.
+
+Coach: What do you think could go wrong if you directly inserted organizationId into the query string?
+
+User: It will throw an error...
+
+Coach: Explanation about SQL injection risk.
+
+Coach: Can you paste an EJS snippet where you insert data into a link?
+
+User: (EJS snippet with project.project_id in href)
+
+Coach: What happens when a user clicks that link?
+
+User: It displays project details using primary key.
+
+Coach: Can you paste a controller function using req.params?
+
+User: (Controller with showCategoryDetailsPage using req.params.id)
+
+Coach: Why use req.params.id instead of req.query?
+
+User: To allow route to access model...
+
+Coach: Can you show error handling code?
+
+User: (testErrorPage snippet)
+
+Coach: Can you show middleware that handles errors?
+
+User: (middleware snippet start)
+
+Coach: After choosing template, how do you send response?
+
+User: Sorry. I don't really know
+
+Coach: Provided explanation using res.status().render().
+
+End of session.
