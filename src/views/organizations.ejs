@@ -1,7 +1,10 @@
 <%- include('partials/header') %>
-
 <main>
-    <h1><%= title %></h1>
+    <h1>
+        <%= title %>
+        <a href="/new-organization" class="btn btn-primary btn-sm">+ Add Organization</a>
+    </h1>
+
     <p>Here are a few of our partner organizations:</p>
 
     <div class="org-grid">
@@ -13,16 +16,15 @@
                 <div class="org-info">
                     <h2><%= organization.name %></h2>
                     <p class="org-description"><%= organization.description %></p>
-                    <a href="mailto:<%= organization.contact_email %>" class="org-email">
-                    <a href="/organizations/<%= organization.organization_id %>"><%= organization.name %></a>
-
-
-                        ✉ <%= organization.contact_email %>
-                    </a>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <a href="mailto:<%= organization.contact_email %>" class="org-email">
+                            ✉ <%= organization.contact_email %>
+                        </a>
+                        <a href="/organizations/<%= organization.organization_id %>" class="btn btn-secondary btn-sm">View Details</a>
+                    </div>
                 </div>
             </div>
         <% }); %>
     </div>
 </main>
-
 <%- include('partials/footer') %>

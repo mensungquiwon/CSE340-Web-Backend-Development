@@ -1,17 +1,46 @@
 <%- include('partials/header') %>
 <main>
-    <h1><%= title %></h1>
+    <h1>
+        <%= title %>
+        <a href="/edit-organization/<%= organizationDetails.organization_id %>" class="btn btn-secondary btn-sm">Edit Organization</a>
+    </h1>
 
-    <h2><%= organizationDetails.name %></h2>
-    <img src="/images/<%= organizationDetails.logo_filename %>" alt="<%= organizationDetails.name %> logo">
+    <div class="detail-card">
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <img src="/images/<%= organizationDetails.logo_filename %>" alt="<%= organizationDetails.name %> logo"
+                style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); padding: 8px; background: var(--bg);">
+            <div>
+                <h2 style="margin: 0 0 0.25rem;"><%= organizationDetails.name %></h2>
+                <a href="mailto:<%= organizationDetails.contact_email %>" class="org-email">
+                    ✉ <%= organizationDetails.contact_email %>
+                </a>
+            </div>
+        </div>
 
-    <p>Description: <%= organizationDetails.description %></p>
+        <div class="detail-label">About</div>
+        <p class="detail-value"><%= organizationDetails.description %></p>
+    </div>
 
-    <h3>Service Projects</h3>
-    <ul>
-        <% projects.forEach(project => { %>
-            <li><a href="/projects/<%= project.project_id %>"><%= project.title %></a></li>
-        <% }) %>
-    </ul>
+    <div class="detail-section">
+        <h2>Service Projects</h2>
+        <% if (projects && projects.length > 0) { %>
+            <ul class="projects-list">
+                <% projects.forEach(project => { %>
+                    <a href="/projects/<%= project.project_id %>" class="project-card">
+                        <div class="project-title"><%= project.title %></div>
+                        <div class="project-meta">
+                            <span>📅 <%= new Date(project.date).toDateString() %></span>
+                            <span>📍 <%= project.location %></span>
+                        </div>
+                    </a>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <div class="empty-state">
+                <p>No service projects found for this organization.</p>
+                <a href="/new-project" class="btn btn-primary">Add a Project</a>
+            </div>
+        <% } %>
+    </div>
 </main>
 <%- include('partials/footer') %>

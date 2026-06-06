@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <main>
     <h1><%= title %></h1>
-
+     <a href="/edit-project/<%= project.project_id %>">Edit Project</a>
     <h2><%= project.title %></h2>
     <p><%= project.description %></p>
     <p>Date: <%= project.date.toDateString() %></p>
@@ -9,6 +9,7 @@
     <h3>Organization</h3>
     <a href="/organizations/<%= project.organization_id %>"><%= project.organization_name %></a>
     
+    <a href="/assign-categories/<%= project.project_id %>">Edit Categories</a> 
 <h3>Category(s)</h3>
 
 <% if (categories && categories.length > 0) { %>
@@ -16,6 +17,7 @@
     <a href="/categories/<%= category.category_id %>">
       <%= category.name %>
     </a>
+
   <% }) %>
 <% } else { %>
   <p>No categories assigned.</p>
