@@ -1,0 +1,325 @@
+WEEK 05 COACHING SESSION TRANSCRIPT
+Student: Jonathan Quiwon
+Date: June 16, 2026
+============================================================
+
+COACH: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say "I don't know" or "I made a mistake." That's the fastest way we'll learn today.
+
+I'm really looking forward to our conversation, and I want you to feel completely comfortable here — no pressure at all, just good learning!
+
+To get us started: what's your name?
+
+------------------------------------------------------------
+
+JONATHAN: Jonathan Quiwon
+
+------------------------------------------------------------
+
+COACH: Great to have you back, Jonathan! This is a safe space — so feel free to say "I'm not sure" or "I think I got this wrong" at any point. That's how we grow!
+
+So let's dive in — can you give me a quick overview of what your Week 05 assignment was about, in your own words?
+
+------------------------------------------------------------
+
+JONATHAN: My week 5 assignment was all about authentication and authorization of user and admin in a system. By defining role in the database based on the privileges a user may have had.
+
+------------------------------------------------------------
+
+COACH: That's a great summary, Jonathan! Authentication (proving who you are) and authorization (controlling what you can do) are two of the most important concepts in web security.
+
+Let's dig into the first part — registration. Can you paste in the code snippet where you handle password hashing when a new user registers?
+
+------------------------------------------------------------
+
+JONATHAN:
+const createUser = async (name, email, passwordHash) => {
+    const default_role = 'user';
+    const query = `
+        INSERT INTO users (name, email, password_hash, role_id) 
+        VALUES ($1, $2, $3, (SELECT role_id FROM roles WHERE role_name = $4)) 
+        RETURNING user_id
+    `;
+    const queryParams = [name, email, passwordHash, default_role];
+    
+    const result = await db.query(query, queryParams);
+
+    if (result.rows.length === 0) {
+        throw new Error('Failed to create user');
+    }
+
+    if (process.env.ENABLE_SQL_LOGGING === 'true') {
+        console.log('Created new user with ID:', result.rows[0].user_id);
+    }
+
+    return result.rows[0].user_id;
+};
+
+------------------------------------------------------------
+
+COACH: Great code, Jonathan! I can see the createUser function takes a passwordHash as a parameter, which means the hashing is happening somewhere before this function is called.
+
+Can you paste in the code where you actually hash the password — the part where you use something like bcrypt before calling createUser?
+
+------------------------------------------------------------
+
+JONATHAN:
+const processUserRegistrationForm = async (req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+        // Hash the password before storing it
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        // Create the user in the database
+        const userId = await createUser(name, email, passwordHash);
+
+        // Redirect to the home page after successful registration
+        req.flash('success', 'Registration successful! Please log in.');
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error registering user:', error);
+        req.flash('error', 'An error occurred during registration. Please try again.');
+        res.redirect('/register');
+    }
+};
+
+const showLoginForm = (req, res) => {
+    res.render('login', { title: 'Login' });
+};
+
+const processLoginForm = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await authenticateUser(email, password);
+        if (user) {
+            // Store user info in session
+            req.session.user = user;
+            req.flash('success', 'Login successful!');
+
+            if (res.locals.NODE_ENV === 'development') {
+                console.log('User logged in:', user);
+            }
+
+            res.redirect('/');
+        } else {
+            req.flash('error', 'Invalid email or password.');
+            res.redirect('/login');
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+        req.flash('error', 'An error occurred during login. Please try again.');
+        res.redirect('/dashboard');
+    }
+};
+
+------------------------------------------------------------
+
+COACH: Excellent, Jonathan! This is really solid code and covers both registration and login nicely.
+
+I want to focus on this line from the registration part:
+
+const salt = await bcrypt.genSalt(10);
+
+Can you explain what a "salt" is and why it's important when hashing passwords?
+
+------------------------------------------------------------
+
+JONATHAN: I can't recall what salt is
+
+------------------------------------------------------------
+
+COACH: No worries at all, Jonathan — that's exactly what this session is for! Let me explain it.
+
+A salt is a random string that bcrypt generates and adds to your password before hashing it. So instead of hashing just "password123", bcrypt hashes something like "password123$2b$10$randomcharacters".
+
+This is important for two reasons:
+1. Two users with the same password will get different hashes — so attackers can't look at the database and spot matching passwords.
+2. It defeats "rainbow table" attacks — where hackers use pre-computed lists of common password hashes to crack them quickly.
+
+The number 10 you passed into bcrypt.genSalt(10) is called the cost factor — it controls how slow the hashing process is. Slower means harder for attackers to crack.
+
+Now looking further at your code, I can see the login section uses req.session.user = user to store the logged-in user. Can you explain in your own words what a session is and why you store the user there?
+
+------------------------------------------------------------
+
+JONATHAN: Session is the process of the server remembering the user activities between different pages. By creating a temporary id for the user and it expires over a certain period of time.
+
+------------------------------------------------------------
+
+COACH: That's a really solid explanation, Jonathan! You've captured the core idea perfectly — HTTP is stateless by nature, meaning the server forgets who you are between requests, so sessions solve that problem by creating that temporary identifier you described.
+
+Now looking at your login code, I can see that after a successful login you do req.session.user = user. Can you paste in the code where you verify the user's password during login — the authenticateUser function?
+
+------------------------------------------------------------
+
+JONATHAN:
+const authenticateUser = async (email, password) => {
+    // Step 1 — Find the user by email
+    const user = await findUserByEmail(email);
+    if (!user) {
+        return null; // User not found
+    }
+
+    // Step 2 — Verify the password using verifyPassword
+    const isPasswordCorrect = await verifyPassword(password, user.password_hash);
+    if (!isPasswordCorrect) {
+        return null; // Password does not match
+    }
+
+    // Step 3 — Remove password_hash before returning
+    delete user.password_hash;
+
+    return user; // Authentication successful
+};
+
+------------------------------------------------------------
+
+COACH: Great code, Jonathan! I love that Step 3 deletes the password_hash before returning the user object — that's a really smart security practice so the hash never ends up stored in the session.
+
+I notice it calls a verifyPassword function to check the password. Can you explain how you think verifyPassword works under the hood — how does bcrypt compare the plain text password the user typed with the hashed version stored in the database?
+
+------------------------------------------------------------
+
+JONATHAN: So hashing passwords is something unique bcrypt does. when the user creates an account, by creating a password. bcrypt hashes the password in the database to that user info. So the hashed password is a unique figures or characters the system use in place of the plain text.
+
+------------------------------------------------------------
+
+COACH: That's a good explanation of what hashing does, Jonathan! You're right that bcrypt stores a unique hash instead of the plain text password.
+
+Let me push your thinking a little further on the comparison part — when a user logs in and types their password, how do you think bcrypt is able to check if the typed password matches the stored hash, without ever storing the original plain text password?
+
+------------------------------------------------------------
+
+JONATHAN: From what I can remember from the lesson. every bit of info what is hashed the system assigns the hashed characters to that plain text. so, the same plain text is written again the system compare the hashed figure to plain text and compare is the same hashed to fit the plain text provided.
+
+------------------------------------------------------------
+
+COACH: You're on the right track, Jonathan! You've got the core idea — bcrypt re-hashes the plain text password the user typed and compares it to the stored hash. The clever part is that bcrypt actually embeds the salt inside the stored hash, so when you call bcrypt.compare(), it extracts that salt, re-hashes the typed password with it, and then checks if the result matches. That's why it works even though no plain text is ever stored!
+
+Now let's move on to the next topic — protecting routes. Can you paste in your middleware code that checks whether a user is logged in before allowing access to certain pages?
+
+------------------------------------------------------------
+
+JONATHAN:
+router.get('/edit-project/:id', requireRole('admin'), showEditProjectForm);
+router.post('/edit-project/:id', requireRole('admin'), projectValidation, processEditProjectForm);
+router.get('/assign-categories/:projectId', requireRole('admin'), showAssignCategoriesForm);
+router.post('/assign-categories/:projectId', requireRole('admin'), processAssignCategoriesForm);
+
+// Admin-only category routes
+router.get('/new-category', requireRole('admin'), showNewCategoryForm);
+router.post('/new-category', requireRole('admin'), categoryValidation, processNewCategoryForm);
+router.get('/edit-category/:id', requireRole('admin'), showEditCategoryForm);
+router.post('/edit-category/:id', requireRole('admin'), categoryValidation, processEditCategoryForm);
+
+router.get('/users', requireRole('admin'), showUsersPage);
+router.post('/users', requireRole('admin'), showUsersPage);
+
+------------------------------------------------------------
+
+COACH: Great, Jonathan! This shows really well how requireRole('admin') is used to protect routes — I can see it sitting right in the middle of each route declaration, acting as a gatekeeper before the final handler runs.
+
+Now I'd love to see the actual implementation of that gatekeeper. Can you paste in the code where requireRole and/or requireLogin are actually defined as functions?
+
+------------------------------------------------------------
+
+JONATHAN:
+const requireRole = (role) => {
+    return (req, res, next) => {
+        // Check if user is logged in first
+        if (!req.session || !req.session.user) {
+            req.flash('error', 'You must be logged in to access this page.');
+            return res.redirect('/login');
+        }
+
+        // Check if user's role matches the required role
+        if (req.session.user.role_name !== role) {
+            req.flash('error', 'You do not have permission to access this page.');
+            return res.redirect('/');
+        }
+
+        // User has required role, continue
+        next();
+    };
+};
+
+------------------------------------------------------------
+
+COACH: This is excellent code, Jonathan! requireRole is a really elegant pattern — it's a function that returns another function, which is exactly how Express middleware works.
+
+I want to focus on the very last line inside the middleware — next(). Can you explain in your own words what you think next() does and what would happen if you forgot to call it?
+
+------------------------------------------------------------
+
+JONATHAN: The route will stop after the function is passed.
+
+------------------------------------------------------------
+
+COACH: You're close, Jonathan! Let me clarify it a little.
+
+next() is actually what tells Express to continue to the next step — meaning if the user passes both checks (logged in and has the right role), next() hands control over to the actual route handler, like showEditProjectForm.
+
+If you forgot to call next(), the request would just hang forever — the user's browser would keep waiting for a response that never comes, even though they had the correct role and permissions!
+
+Now let's move on to our final topic — the UI side of things. Can you paste in an EJS snippet from your navigation or any template where you show or hide links based on whether the user is logged in or their role?
+
+------------------------------------------------------------
+
+JONATHAN:
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+     <% if (user && user.role_name === 'admin') { %>
+    <a href="/users"  class="btn btn-primary btn-sm">Manage Users</a>
+<% } %>
+    <h2>Dashboard</h2>
+    <p>Name: <%= user.name %></p>
+    <p>Username: <%= email %></p>
+
+</main>
+
+<%- include('partials/footer') %>
+
+------------------------------------------------------------
+
+COACH: Great snippet, Jonathan! This is a perfect example of role-based conditional rendering in the UI.
+
+I want to focus on this line specifically:
+
+<% if (user && user.role_name === 'admin') { %>
+
+Can you explain why you check for user && first before checking user.role_name === 'admin' — what would happen if you only checked user.role_name === 'admin' without the user && part?
+
+------------------------------------------------------------
+
+JONATHAN: user the variable set to session or env in the handler. so it use to check for the user session first along with with the database attribute.
+
+------------------------------------------------------------
+
+COACH: That's a good instinct, Jonathan! You're right that user comes from the session. Let me sharpen the explanation a little though.
+
+The reason you need user && first is to guard against a crash. If no one is logged in, user would be null or undefined. If you tried to access user.role_name on a null value, JavaScript would throw an error like "Cannot read properties of null" and your page would break.
+
+So by checking user && first, you're saying: "Only check the role if the user object actually exists." It's a simple but really important defensive programming habit!
+
+---
+
+Jonathan, I'm happy to say we've now covered all four required topics today:
+
+- Topic 1 — Registration and password hashing with bcrypt
+- Topic 2 — Login functionality and session management
+- Topic 3 — Protected access middleware with requireRole
+- Topic 4 — Role-based conditional rendering in EJS
+
+You did a fantastic job throughout this session! Is there anything you'd like to revisit or any questions before we wrap up?
+
+------------------------------------------------------------
+
+JONATHAN: NO. just create the txt file
+
+============================================================
+END OF SESSION TRANSCRIPT
+============================================================
