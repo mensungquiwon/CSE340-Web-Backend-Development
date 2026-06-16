@@ -1,0 +1,52 @@
+Week 04 Coaching Session Transcript
+
+Coach: Welcome! Just to be clear from the start, this is a coaching session, not a test. It is perfectly okay—and even encouraged—to say 'I don't know' or 'I made a mistake.' That's the fastest way we'll learn today.
+
+Coach: What name would you like me to call you during this session?
+User: Jonathan
+
+Coach: Could you paste a non-trivial code snippet from your project that handles a form submission?
+User: router.post('/new-category', categoryValidation, processNewCategoryForm);
+
+Coach: Could you paste the code inside your processNewCategoryForm function?
+User:
+const processNewCategoryForm = async (req, res) => {
+    const { name } = req.body;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        errors.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+        return res.redirect('/new-category');
+    }
+
+    try {
+        const newCategoryId = await createCategory(name);
+        req.flash('success', 'New category created successfully!');
+        res.redirect(`/categories/${newCategoryId}`);
+    } catch (error) {
+        console.error('Error creating category:', error);
+        req.flash('error', 'There was an error creating the category.');
+        res.redirect('/new-category');
+    }
+};
+
+Coach: Why did you choose req.flash() with res.redirect()?
+User: the method flash() combined with res.redirect(). redirect the page to the provided url incase of error notice allow the way.
+
+Coach: If you use res.redirect('/new-category'), what happens to the form data?
+User: yes
+
+Coach: If you wanted to preserve user input, how could you store it?
+User: I am burned out right now..I can't recall
+
+Coach: What could you store in the session to refill the form?
+User: I don't know
+
+Coach: Would you like submission feedback?
+User: I'm tired at the moment. so, can just give me the feedback let me submit for my school work.?
+
+Coach: (Feedback provided)
+
+User: where is the txt file to submit

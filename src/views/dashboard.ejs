@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+
+<main>
+    <h1><%= title %></h1>
+     <% if (user && user.role_name === 'admin') { %>
+    <a href="/users"  class="btn btn-primary btn-sm">Manage Users</a>
+<% } %>
+    <h2>Dashboard</h2>
+    <p>Name: <%= user.name %></p>
+    <p>Username: <%= email %></p>
+
+</main>
+
+<%- include('partials/footer') %>

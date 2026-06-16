@@ -9,14 +9,6 @@ CREATE TABLE organizations (
     logo_filename   VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE organizations (
-    organization_id SERIAL PRIMARY KEY,
-    name            VARCHAR(150) NOT NULL,
-    description     TEXT NOT NULL,
-    contact_email   VARCHAR(255) NOT NULL,
-    logo_filename   VARCHAR(255) NOT NULL
-);
-
 -- ========================================
 -- Service Projects
 -- ========================================
@@ -108,4 +100,22 @@ VALUES
     (15, 4), (15, 5);
 
 
-SELECT project_id, title, description, location, date, organization_id FROM project;
+CREATE TABLE roles (
+role_id SERIAL primary key,
+role_name VARCHAR(50) UNIQUE NOT NULL,
+role_description TEXT
+);
+
+INSERT INTO roles (role_name, role_description)
+VALUES 
+('user', 'Standard user with basic access.'),
+('admin', 'Administrator with full system access.');
+
+CREATE TABLE users (
+user_id SERIAL PRIMARY KEY,
+name VARCHAR(100) NOT NULL,
+email VARCHAR(100) UNIQUE NOT NULL,
+password_hash VARCHAR(255) UNIQUE NOT NULL,
+role_id INT REFERENCES roles(role_id),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);

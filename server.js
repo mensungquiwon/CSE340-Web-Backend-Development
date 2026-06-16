@@ -45,15 +45,18 @@ app.set('view engine', 'ejs');
 // Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
 
+// Middleware to set res.locals variables for to all templates
 app.use((req, res, next) => {
-    if (NODE_ENV === 'development') {
-        console.log(`${req.method} ${req.url}`);
+    res.locals.isLoggedIn = false;
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+        
     }
-    next(); // Pass control to the next middleware or route
-});
-// Middleware to make NODE_ENV available to all templates
-app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+
     res.locals.NODE_ENV = NODE_ENV;
+    console.log('LOCALS SET:', res.locals.user, res.locals.isLoggedIn); // ← add this
+
     next();
 });
 /**
