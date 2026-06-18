@@ -794,6 +794,80 @@ footer a:hover {
     font-size: 12px;
     color: var(--error);
 }
+/* ───────── USERS TABLE CARD ───────── */
+.users-table-card {
+    margin-top: 1rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ───────── TABLE ───────── */
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+/* HEADER */
+.users-table thead {
+    background: var(--navy);
+    color: #fff;
+}
+
+.users-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* BODY */
+.users-table td {
+    padding: 12px 16px;
+    color: var(--text-secondary);
+}
+
+/* ROW STYLING */
+.users-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: all 0.15s ease;
+}
+
+/* STRIPED ROWS */
+.users-table tbody tr:nth-child(even) {
+    background: #f8fbff;
+}
+
+/* HOVER EFFECT */
+.users-table tbody tr:hover {
+    background: #eef4fb;
+}
+
+/* ───────── ROLE BADGE ───────── */
+.user-role {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* user role */
+.user-role.user {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+/* admin role */
+.user-role.admin {
+    background: #fde68a;
+    color: #92400e;
+}
 
 /* ── Responsive ── */
 @media (max-width: 640px) {
@@ -842,4 +916,5 @@ footer a:hover {
     .form-actions {
         flex-direction: column;
     }
+    
 }

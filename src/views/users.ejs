@@ -1,24 +1,33 @@
 <%- include('partials/header') %>
+
 <main>
     <h1><%= title %></h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% users.forEach(user => { %>
+    <div class="users-table-card">
+        <table class="users-table">
+            <thead>
                 <tr>
-                    <td><%= user.name %></td>
-                    <td><%= user.email %></td>
-                    <td><%= user.role_name %></td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
                 </tr>
-            <% }); %>
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+                <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.name %></td>
+                        <td><%= user.email %></td>
+                        <td>
+                            <span class="user-role <%= user.role_name %>">
+                                <%= user.role_name %>
+                            </span>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
 </main>
+
 <%- include('partials/footer') %>
