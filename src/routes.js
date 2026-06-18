@@ -25,6 +25,7 @@ import {
 } from './controllers/categories.js';
 import { showUserRegistrationForm, processUserRegistrationForm, showLoginForm, processLoginForm, processLogout } from './controllers/users.js';
 import { requireLogin, showDashboard, requireRole, showUsersPage } from './controllers/users.js';
+import { processAddVolunteer, processRemoveVolunteer, volunteerDashboard } from './controllers/volunteers.js';
 
 const router = express.Router();
 
@@ -37,6 +38,11 @@ router.get('/logout', processLogout);
 
 // Protected dashboard
 router.get('/dashboard', requireLogin, showDashboard);
+router.get('/dashboard', requireLogin, showDashboard);
+
+// Volunteer routes — protected by requireLogin middleware
+router.post('/volunteer/add/:projectId', requireLogin, processAddVolunteer);
+router.post('/volunteer/remove/:projectId', requireLogin, processRemoveVolunteer);
 
 // Public routes
 router.get('/', showHomePage);

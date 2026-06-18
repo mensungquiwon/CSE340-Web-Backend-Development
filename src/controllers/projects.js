@@ -4,6 +4,7 @@ import { getCategoriesByProject } from '../models/categories.js';
 import { createProject } from '../models/projects.js';
 import { getAllOrganizations } from '../models/organizations.js';
 import { body, validationResult} from 'express-validator';
+import { isVolunteer } from '../models/volunteers.js';
 
 // Constant for number of upcoming projects
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
@@ -42,7 +43,14 @@ const showProjectDetailsPage = async (req, res) => {
     const project = await getProjectDetails(projectId);
     const categories = await getCategoriesByProject(projectId);
     const title = project.title;
-    res.render('project', { title, project, categories });
+
+    // Check if logged in user is already a volunteer
+    let userIsVolunteer = false;
+    if (req.session.user) {
+        userIsVolunteer = await isVolunteer(req.session.user.user_id, projectId);
+    }
+
+    res.render('project', { title, project, categories, userIsVolunteer });
 };
 
 // Show new project form

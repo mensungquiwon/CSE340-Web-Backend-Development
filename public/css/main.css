@@ -76,7 +76,7 @@ nav {
     z-index: 100;
 }
 
-.nav-brand {
+.nav-link {
     font-family: 'Lora', serif;
     font-size: 15.5px;
     font-weight: 600;
@@ -86,7 +86,7 @@ nav {
     text-decoration: none;
 }
 
-.nav-brand:hover {
+.nav-link:hover {
     color: var(--accent);
     text-decoration: none;
 }

@@ -10,6 +10,37 @@
     <a href="/organizations/<%= project.organization_id %>"><%= project.organization_name %></a>
     
     <a href="/assign-categories/<%= project.project_id %>">Edit Categories</a> 
+    <!-- Volunteer Section -->
+<div class="detail-section">
+    <h2>Volunteer</h2>
+    <% if (locals.user) { %>
+        <% if (userIsVolunteer) { %>
+            <!-- Already volunteering -->
+            <div class="alert info">
+                ✅ You are volunteering for this project!
+            </div>
+            <form action="/volunteer/remove/<%= project.project_id %>" method="POST">
+                <button type="submit" class="btn btn-danger">
+                    Remove Myself as Volunteer
+                </button>
+            </form>
+        <% } else { %>
+            <!-- Not yet volunteering -->
+            <form action="/volunteer/add/<%= project.project_id %>" method="POST">
+                <button type="submit" class="btn btn-primary">
+                    Volunteer for this Project
+                </button>
+            </form>
+        <% } %>
+    <% } else { %>
+        <!-- Not logged in -->
+        <p>
+            <a href="/login" class="btn btn-secondary">
+                Log in to volunteer for this project
+            </a>
+        </p>
+    <% } %>
+</div>
 <h3>Category(s)</h3>
 
 <% if (categories && categories.length > 0) { %>

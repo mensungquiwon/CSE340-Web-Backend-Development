@@ -2,13 +2,60 @@
 
 <main>
     <h1><%= title %></h1>
-     <% if (user && user.role_name === 'admin') { %>
-    <a href="/users"  class="btn btn-primary btn-sm">Manage Users</a>
-<% } %>
-    <h2>Dashboard</h2>
-    <p>Name: <%= user.name %></p>
-    <p>Username: <%= email %></p>
 
+    <!-- Admin Button -->
+    <% if (user && user.role_name === 'admin') { %>
+        <a href="/users" class="btn btn-primary btn-sm">Manage Users</a>
+    <% } %>
+
+    <!-- User Info Card -->
+    <div class="detail-card" style="margin-bottom: 1.5rem;">
+        <div class="detail-label">Name</div>
+        <div class="detail-value"><strong><%= user.name %></strong></div>
+
+        <div class="detail-label">Email</div>
+        <div class="detail-value"><%= email %></div>
+
+        <div class="detail-label">Role</div>
+        <div class="detail-value">
+            <span class="badge badge-blue"><%= user.role_name %></span>
+        </div>
+    </div>
+
+    <!-- Volunteer Projects Section -->
+    <div class="detail-section">
+        <h2>My Volunteer Projects</h2>
+        <% if (projects && projects.length > 0) { %>
+            <ul class="projects-list">
+                <% projects.forEach(project => { %>
+                    <div class="project-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <a href="/projects/<%= project.project_id %>" class="project-title">
+                                    <%= project.title %>
+                                </a>
+                                <div class="project-meta">
+                                    <span>📅 <%= new Date(project.date).toDateString() %></span>
+                                    <span>📍 <%= project.location %></span>
+                                    <span>🏢 <%= project.organization_name %></span>
+                                </div>
+                            </div>
+                            <form action="/volunteer/remove/<%= project.project_id %>" method="POST">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <div class="empty-state">
+                <p>You have not signed up for any projects yet.</p>
+                <a href="/projects" class="btn btn-primary">Browse Projects</a>
+            </div>
+        <% } %>
+    </div>
 </main>
 
 <%- include('partials/footer') %>
